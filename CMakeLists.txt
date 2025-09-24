@@ -10,3 +10,6 @@ set(SOURCES
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
+
+find_package(raylib CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
