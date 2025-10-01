@@ -3,21 +3,36 @@
 #include <core/common.hpp>
 #include <core/engine.hpp>
 
+#include <core/net/net.hpp>
+
 Engine g_engine;
 
 using namespace core;
 
-extern "C" FOXWING_EXPORT void ServerInit(void) 
+void OnMessageRecv(net::Msg& msg)
+{
+    LOG_INFO("OnMsgRecv");
+}
+
+extern "C" FOXWING_EXPORT void ServerInit(void)
 {
     LOG_INFO("Server Init");
+
+    net::Init();
+    net::SetMessageHandler(OnMessageRecv);
+
+    if (!net::Host("", 27015))
+    {
+        LOG_INFO("Failed to create ENet host");
+    }
 }
 
-extern "C" FOXWING_EXPORT void ServerTick(void) 
+extern "C" FOXWING_EXPORT void ServerTick(void)
 {
-    LOG_INFO("Server Tick");
+    net::Service();
 }
 
-extern "C" FOXWING_EXPORT void ServerQuit(void) 
+extern "C" FOXWING_EXPORT void ServerQuit(void)
 {
-    LOG_INFO("Server Quit");
+
 }

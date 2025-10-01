@@ -1,11 +1,9 @@
 #pragma once
 
-namespace core { namespace net {
+namespace core {
+namespace net {
 
-	enum class MsgType
-	{
-		kServerInfoReq,
-		kServerInfoRes
-	};
+enum class MsgType { kServerInfoReq, kServerInfoRes };
 
-}}  // namespace core
+}
+}  // namespace core
