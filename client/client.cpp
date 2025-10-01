@@ -1,6 +1,7 @@
 #include <core/platform/platform.hpp>
 #include <core/util/logger.hpp>
 #include <core/engine.hpp>
+#include <core/net/msg.hpp>
 
 #include <raylib.h>
 
@@ -60,6 +61,8 @@ int main(void) {
         return -1;
     }
     
+    SetTargetFPS(1);
+
     while (!WindowShouldClose()) {
         // Update
         server_tick_fn();
