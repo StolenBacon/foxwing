@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstring>
 #include <string>
 #include <vector>
 
@@ -17,14 +18,14 @@ class Msg
 public:
     Msg(MsgType type) : m_type(type) { this->Write(m_type); }
 
-    Msg(uint8_t* data, size_t length) 
-    { 
+    Msg(uint8_t* data, size_t length)
+    {
         this->m_payload.resize(length);
         std::memcpy(m_payload.data(), data, length);
-        
+
         this->Read(m_type);
 
-        LOG_INFO("MSG TYPE " << (int) m_type);
+        LOG_INFO("MSG TYPE " << (int)m_type);
     }
 
     template <typename T>
@@ -60,7 +61,7 @@ public:
             LOG_INFO("Msg:Read Attempted to read past the bounds ")
             return false;
         }
-        std::memcpy(&out, m_payload.data() + m_read_cursor, sizeof(T));
+        std::memcpy((void*)&out, m_payload.data() + m_read_cursor, sizeof(T));
         m_read_cursor += sizeof(T);
         return true;
     }

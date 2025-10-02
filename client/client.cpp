@@ -1,5 +1,6 @@
 #include <thread>
 #include <chrono>
+#include <atomic>
 
 #include <core/engine.hpp>
 #include <core/net/msg.hpp>

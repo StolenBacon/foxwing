@@ -81,7 +81,7 @@ void core::net::Service()
                 case ENET_EVENT_TYPE_CONNECT:
                     printf("A new client connected from %x:%u.\n", event.peer->address.host, event.peer->address.port);
                     /* Store any relevant client information here. */
-                    event.peer->data = "Client information";
+                    // event.peer->data = "Client information";
                     break;
                 case ENET_EVENT_TYPE_RECEIVE:
                 {
@@ -96,7 +96,7 @@ void core::net::Service()
                     /* Clean up the packet now that we're done using it. */
                     enet_packet_destroy(event.packet);
                 }
-                    
+
                 break;
                 case ENET_EVENT_TYPE_DISCONNECT:
                     printf("%s disconnected.\n", event.peer->data);
@@ -118,7 +118,7 @@ void core::net::Broadcast(const Msg& msg)
     LOG_INFO("Broadcast Message");
 }
 
-void core::net::SetMessageHandler(std::function<void(core::net::Msg&)> handler) 
+void core::net::SetMessageHandler(std::function<void(core::net::Msg&)> handler)
 {
     message_handler = handler;
 }
