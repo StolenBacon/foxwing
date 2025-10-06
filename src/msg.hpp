@@ -4,14 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "../util/logger.hpp"
-
 #include "msg_types.hpp"
-
-namespace core
-{
-namespace net
-{
 
 class Msg
 {
@@ -24,8 +17,6 @@ public:
         std::memcpy(m_payload.data(), data, length);
 
         this->Read(m_type);
-
-        LOG_INFO("MSG TYPE " << (int)m_type);
     }
 
     template <typename T>
@@ -58,7 +49,7 @@ public:
     {
         if (m_read_cursor + sizeof(T) > m_payload.size())
         {
-            LOG_INFO("Msg:Read Attempted to read past the bounds ")
+            // LOG_INFO("Msg:Read Attempted to read past the bounds ")
             return false;
         }
         std::memcpy((void*)&out, m_payload.data() + m_read_cursor, sizeof(T));
@@ -75,7 +66,6 @@ public:
 
         if (m_read_cursor + length > m_payload.size())
         {
-            LOG_INFO("Msg:Read Attempted to read past the bounds ")
             return false;
         }
 
@@ -92,6 +82,3 @@ private:
     std::vector<uint8_t> m_payload;
     size_t m_read_cursor = 0;
 };
-
-}  // namespace net
-}  // namespace core
