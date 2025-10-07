@@ -45,6 +45,7 @@ enum class MsgError : uint8_t
 {
     UNKNOWN,
     VERSION_MISMATCH,
+    NO_FREE_SLOTS,
 };
 
 constexpr const char* MsgErrorString(MsgError type)

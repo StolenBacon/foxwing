@@ -8,6 +8,8 @@
 #include "msg.hpp"
 #include "util.hpp"
 
+Server _server;
+
 extern std::queue<Msg> g_to_server;
 extern std::queue<Msg> g_to_client;
 
@@ -39,6 +41,26 @@ void handleConnect(Msg& msg)
         g_to_client.push(reply);
         return;
     }
+
+    // Find a client slow
+    for (size_t i = 0; i < 32; i++)
+    {
+        if (_server.clients[i].state == NetClientState::FREE)
+        {
+            _server.clients[i].name = client_player_name;
+            _server.clients[i].state = NetClientState::CONNECTED;
+
+            Msg reply(MsgType::S2C_CONNECT);
+            reply.Write(i);
+            g_to_client.push(reply);
+            return;
+        }
+    }
+
+    // We could not find a free slot
+    Msg reply(MsgType::ERROR);
+    reply.Write(MsgError::NO_FREE_SLOTS);
+    g_to_client.push(reply);
 }
 
 void handleDisconnect(const Msg& pkt)
