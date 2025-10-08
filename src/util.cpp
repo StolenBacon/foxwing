@@ -8,7 +8,3 @@ std::string GetBuildDateTime()
     return std::string(BUILD_DATE) + " " + BUILD_TIME;
 }
 
-uint32_t GetBuildHash()
-{
-    return fnv1a(GIT_COMMIT_HASH);
-}

@@ -15,7 +15,9 @@ enum class MsgType : uint8_t
     S2C_CONNECT,
 
     C2S_DISCONNECT,
-    S2C_DISCONNECT
+    S2C_DISCONNECT,
+
+    S2C_ENTITY,
 };
 
 constexpr const char* MsgTypeString(MsgType type)
@@ -36,6 +38,8 @@ constexpr const char* MsgTypeString(MsgType type)
             return "Disconnect";
         case MsgType::S2C_DISCONNECT:
             return "Disconnect";
+        case MsgType::S2C_ENTITY:
+            return "Entity";
         default:
             return "Unknown";
     }

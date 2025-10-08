@@ -2,6 +2,7 @@ set(FOXWING_SRCS
 	main.cpp
 	settings.cpp
 	server.cpp
+	server_handlers.cpp
 	util.cpp
 )
 

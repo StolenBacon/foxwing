@@ -1,15 +1,103 @@
 #include "server.hpp"
 
+#include <chrono>
+#include <thread>
 #include <queue>
 #include <unordered_map>
 #include <functional>
+#include <raymath.h>
 
 #include "logger.hpp"
 #include "msg.hpp"
 #include "util.hpp"
 
-Server _server;
+void Server::start()
+{
+    using clock = std::chrono::steady_clock;
 
+    m_running = true;
+    m_state = ServerState::INACTIVE;
+
+    // const std::chrono::duration<double> tick_interval(1.0 / m_tick_rate);
+
+    // const double tick_rate = 1.0;
+    // const double fixed_delta = 1.0 / tick_rate;  // seconds per tick
+
+    /*auto next_tick = std::chrono::steady_clock::now();*/
+    std::chrono::duration<double> accumulator(0.0);
+    auto previous = clock::now();
+
+    while (m_running)
+    {
+        auto now = std::chrono::steady_clock::now();
+        auto frame_time = now - previous;
+        previous = now;
+        accumulator += frame_time;
+
+        while (accumulator.count() >= m_fixed_delta)
+        {
+            this->tick();
+            accumulator -= std::chrono::duration<double>(m_fixed_delta);
+        }
+
+        // Optional: sleep a little to avoid 100% CPU
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+
+    SERVER_LOG("SERVER QUIT!!!");
+}
+
+void Server::quit()
+{
+    m_running = false;
+}
+
+void Server::set_tick_rate(double tick_rate)
+{
+    m_tick_rate = tick_rate;
+    m_fixed_delta = 1.0 / m_tick_rate;
+}
+
+static Vector3 cube_position = {0.0f, 0.0f, 0.0f};
+
+void Server::tick()
+{
+    // Handle network messages
+    while (!m_messages_to_server.empty())
+    {
+        auto msg = m_messages_to_server.front();
+
+        // Get msg type
+        MsgType type;
+        msg.Read(type);
+
+        SERVER_LOG("Msg From Client: " << MsgTypeString(msg.type()));
+
+        if (m_handlers.count(type))
+        {
+            m_handlers[type](msg);
+        }
+
+        m_messages_to_server.pop();  // Remove it
+    }
+
+    cube_position.y += 0.05f;
+    if (cube_position.y > 10.0f)
+    {
+        cube_position.y = 0.0f;
+    }
+
+    Msg reply(MsgType::S2C_ENTITY);
+    reply.Write(cube_position);
+    m_messages_to_client.push(reply);
+
+    if (m_state == ServerState::INACTIVE)
+    {
+        return;
+    }
+}
+
+#if 0
 extern std::queue<Msg> g_to_server;
 extern std::queue<Msg> g_to_client;
 
@@ -29,7 +117,7 @@ void handleConnect(Msg& msg)
 
     uint32_t client_build_hash;
     std::string client_player_name;
-    
+
     msg.Read(client_build_hash);
     msg.Read(client_player_name);
 
@@ -68,11 +156,9 @@ void handleDisconnect(const Msg& pkt)
     SERVER_LOG("handleDisconnect()");
 }
 
-static std::unordered_map<MsgType, std::function<void(Msg&)>> handlers = {
-    {MsgType::C2S_SERVER_INFO, handleServerInfo},
-    {MsgType::C2S_CONNECT, handleConnect},
-    {MsgType::C2S_DISCONNECT, handleDisconnect}};
-
+static std::unordered_map<MsgType, std::function<void(Msg&)>> handlers = {{MsgType::C2S_SERVER_INFO, handleServerInfo},
+                                                                          {MsgType::C2S_CONNECT, handleConnect},
+                                                                          {MsgType::C2S_DISCONNECT, handleDisconnect}};
 
 void ServerTick(void)
 {
@@ -96,3 +182,5 @@ void ServerTick(void)
 }
 
 void ServerQuit(void) {}
+
+#endif
